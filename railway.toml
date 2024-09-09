@@ -1,0 +1,26 @@
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm run build"
+
+[deploy]
+startCommand = "npm start"
+healthcheckPath = "/"
+healthcheckTimeout = 100
+
+[phases.setup]
+cmds = ["npm install"]
+
+[[phases.build]]
+name = "Build Client"
+cmds = ["cd client && npm install && npm run build"]
+
+[[phases.build]]
+name = "Build Server"
+cmds = ["cd server && npm install"]
+
+[start]
+cmd = "npm start"
+
+[[services]]
+name = "web"
+port = 3001
