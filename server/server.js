@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../../.env' });
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -30,7 +30,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Middleware
-app.use(cors());
+app.use(cors({ origin: process.env.FRONTEND_URL }));
 app.use(express.json());
 
 // Rate limiting
@@ -87,7 +87,7 @@ const nostrSearchPatterns = [
   /imdb\.com|rottentomatoes\.com|netflix\.com|hulu\.com|amazon\.com\/gp\/video\/|play\.max\.com/i,
   /podcasts\.apple\.com|open\.spotify\.com\/episode\/|open\.spotify\.com\/show\//i,
   /spotify\.com\/artist|spotify\.com\/track|spotify\.com\/album|music\.apple\.com|soundcloud\.com/i,
-].map(regex => new RegExp(regex.source, 'i')); // Compile regexes once
+].map(regex => new RegExp(regex.source, 'i'));
 
 async function fetchBlueskyPosts(activeTab, preferredLanguages) {
   logger.info('Fetching Bluesky posts for tab:', activeTab);
@@ -234,20 +234,20 @@ async function fetchMastodonPosts(activeTab) {
   let allPosts = [];
   let maxId = null;
   const postsPerPage = 40;
-  const maxPages = 10; // Adjust this value to balance between thoroughness and performance
+  const maxPages = 10;
 
   try {
 	for (let page = 0; page < maxPages; page++) {
 	  logger.info(`Fetching Mastodon posts page ${page + 1}`);
 	  
-	  const params = {
+	  const params = new URLSearchParams({
 		q: searchQuery,
 		type: 'statuses',
-		limit: postsPerPage,
+		limit: postsPerPage.toString(),
 		...(maxId && { max_id: maxId })
-	  };
+	  });
 
-	  const response = await fetch(`${baseUrl}search`, {
+	  const response = await fetch(`${baseUrl}search?${params}`, {
 		method: 'GET',
 		headers: {
 		  'Authorization': `Bearer ${accessToken}`
@@ -322,12 +322,13 @@ app.get('/api/feed', async (req, res) => {
   }
 });
 
-// Serve static files from the React build
-app.use(express.static(path.join(__dirname, '../../client/build')));
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Handle React routing, return all requests to React app
+// The "catchall" handler: for any request that doesn't
+// match one above, send back React's index.html file.
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../client/build', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Error handling middleware
