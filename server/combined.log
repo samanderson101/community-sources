@@ -17,3 +17,7 @@
 {"level":"info","message":"Sending response with 0 Bluesky posts, 7 Nostr posts, and 0 Mastodon posts","service":"community-sources"}
 {"level":"info","message":"Filtered 7 Nostr events","service":"community-sources"}
 {"level":"info","message":"Sending response with 0 Bluesky posts, 7 Nostr posts, and 0 Mastodon posts","service":"community-sources"}
+{"level":"info","message":"Server running on port 3001","service":"community-sources"}
+{"level":"info","message":"Server running on port 3001","service":"community-sources"}
+{"level":"info","message":"Server running on port 3001","service":"community-sources"}
+{"level":"info","message":"Server running on port 3001","service":"community-sources"}
